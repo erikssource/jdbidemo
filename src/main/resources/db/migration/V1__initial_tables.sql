@@ -31,21 +31,22 @@ CREATE TABLE customer (
 
 CREATE UNIQUE INDEX idx_email ON customer(email);
 
-CREATE TABLE order (
+CREATE TABLE orders (
     id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
     customer_id uuid,
-    status varchar(16)
+    status varchar(16),
     created timestamp,
     updated timestamp    
 );
 
-CREATE INDEX idx_order_customer_id ON order(customer_id);
-CREATE INDEX idx_order_status ON order(status);
+CREATE INDEX idx_orders_customer_id ON orders(customer_id);
+CREATE INDEX idx_orders_status ON orders(status);
 
 CREATE TABLE order_line (
     id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
     order_id uuid,
     product_id uuid,
+    quantity integer,
     created timestamp,
     updated timestamp
 );
