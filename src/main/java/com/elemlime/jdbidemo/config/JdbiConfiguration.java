@@ -1,5 +1,6 @@
 package com.elemlime.jdbidemo.config;
 
+import com.elemlime.jdbidemo.dao.CategoryDao;
 import java.util.List;
 import javax.sql.DataSource;
 import org.jdbi.v3.core.Jdbi;
@@ -30,5 +31,10 @@ public class JdbiConfiguration {
         log.info("Installing Mappers... ({} found)", mappers.size());
         mappers.forEach(jdbi::registerRowMapper);
         return jdbi;
+    }
+    
+    @Bean
+    public CategoryDao categoryDao(Jdbi jdbi) {
+        return jdbi.onDemand(CategoryDao.class);
     }
 }
