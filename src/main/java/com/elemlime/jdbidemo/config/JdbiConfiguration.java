@@ -2,6 +2,7 @@ package com.elemlime.jdbidemo.config;
 
 import com.elemlime.jdbidemo.dao.CategoryDao;
 import com.elemlime.jdbidemo.dao.CustomerDao;
+import com.elemlime.jdbidemo.dao.OrderDao;
 import com.elemlime.jdbidemo.dao.ProductDao;
 import java.util.List;
 import javax.sql.DataSource;
@@ -48,5 +49,10 @@ public class JdbiConfiguration {
     @Bean
     public CustomerDao customerDao(Jdbi jdbi) {
         return jdbi.onDemand(CustomerDao.class);
+    }
+    
+    @Bean
+    public OrderDao orderDao(Jdbi jdbi) {
+        return jdbi.onDemand(OrderDao.class);
     }
 }

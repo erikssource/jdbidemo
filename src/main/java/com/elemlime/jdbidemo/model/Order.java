@@ -13,6 +13,6 @@ public class Order {
     private UUID id;
     private String status;
     private Instant created;
-    private Instant updated;
+    private Instant updated;  
     private Customer customer;
 }
