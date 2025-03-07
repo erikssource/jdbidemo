@@ -12,5 +12,5 @@ public interface ProductDao {
         FROM product p INNER JOIN category c ON p.category_id = c.id
         ORDER BY c.name, p.name
               """)
-    public List<Product> getAll();
+    List<Product> getAll();
 }
