@@ -1,11 +1,11 @@
 package com.elemlime.jdbidemo.controller;
 
 import com.elemlime.jdbidemo.model.Category;
+import com.elemlime.jdbidemo.model.CategoryData;
 import com.elemlime.jdbidemo.service.CategoryService;
 import java.util.List;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/category")
@@ -19,5 +19,10 @@ public class CategoryController {
     @GetMapping
     public List<Category> getAll() {
         return categoryService.getAll();
+    }
+
+    @PostMapping
+    public Category create(@RequestBody CategoryData categoryData) {
+        return categoryService.createCategory(categoryData.getName());
     }
 }
