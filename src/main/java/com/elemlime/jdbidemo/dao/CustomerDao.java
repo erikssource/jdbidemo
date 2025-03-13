@@ -3,6 +3,7 @@ package com.elemlime.jdbidemo.dao;
 import com.elemlime.jdbidemo.model.Customer;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
 import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.customizer.Timestamped;
@@ -28,6 +29,16 @@ public interface CustomerDao {
 
   @SqlUpdate(
       """
+      UPDATE customer SET first_name = :firstName, last_name = :lastName, email = :email, updated = :now
+      WHERE id = :id
+      RETURNING *
+      """)
+  @GetGeneratedKeys
+  @Timestamped
+  Customer updateCustomer(@Bind UUID id, @Bind String firstName, @Bind String lastName, @Bind String email);
+
+  @SqlUpdate(
+      """
       INSERT INTO customer (first_name, last_name, email, created, updated)
             VALUES  (:firstName, :lastName, :email, :now, :now)
       ON CONFLICT (email) DO UPDATE SET last_name = :lastName, first_name = :firstName, updated = :now
@@ -35,6 +46,6 @@ public interface CustomerDao {
       """)
   @GetGeneratedKeys
   @Timestamped
-  Optional<Customer> createOrUpdateCustomer(
+  Customer createOrUpdateCustomer(
       @Bind String firstName, @Bind String lastName, @Bind String email);
 }

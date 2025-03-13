@@ -1,8 +1,9 @@
 package com.elemlime.jdbidemo.controller;
 
 import com.elemlime.jdbidemo.model.Category;
-import com.elemlime.jdbidemo.model.CategoryData;
+import com.elemlime.jdbidemo.model.request.CreateCategory;
 import com.elemlime.jdbidemo.service.CategoryService;
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +22,7 @@ public class CategoryController {
   }
 
   @PostMapping
-  public Category create(@RequestBody CategoryData categoryData) {
+  public Category create(@RequestBody @Valid CreateCategory categoryData) {
     return categoryService.createCategory(categoryData.getName());
   }
 }
