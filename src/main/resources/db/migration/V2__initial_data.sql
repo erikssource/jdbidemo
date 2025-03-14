@@ -23,8 +23,8 @@ INSERT INTO orders (id, customer_id, status, created, updated)
 VALUES
     ('23f74574-3a4d-4cde-88e9-a46e2ca93f5a', '5c59adb7-4643-4685-9770-62950973123d', 'COMPLETED', NOW(), NOW());
 
-INSERT INTO order_line (id, order_id, product_id, quantity, created, updated)
+INSERT INTO order_line (id, order_id, product_id, quantity, price, created, updated)
 VALUES
-    ('feff9fda-6fa5-485e-85fb-4d1bdeeca8b5', '23f74574-3a4d-4cde-88e9-a46e2ca93f5a', '3f8d97bf-8c80-4156-a98c-ae9f393664d5', 2, NOW(), NOW()),
-    ('2742b020-1c27-43dc-85f2-000a65a5dc4f', '23f74574-3a4d-4cde-88e9-a46e2ca93f5a', '14965c28-ed65-4720-a94a-dd982c960680', 1, NOW(), NOW());
+    ('feff9fda-6fa5-485e-85fb-4d1bdeeca8b5', '23f74574-3a4d-4cde-88e9-a46e2ca93f5a', '3f8d97bf-8c80-4156-a98c-ae9f393664d5', 2, 699, NOW(), NOW()),
+    ('2742b020-1c27-43dc-85f2-000a65a5dc4f', '23f74574-3a4d-4cde-88e9-a46e2ca93f5a', '14965c28-ed65-4720-a94a-dd982c960680', 1, 450, NOW(), NOW());
 

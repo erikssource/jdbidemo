@@ -6,8 +6,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-public record Category(
-    UUID id,
-    String name,
-    Instant created,
-    Instant updated) {}
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class Category {
+  private UUID id;
+  private String name;
+  private Instant created;
+  private Instant updated;
+}

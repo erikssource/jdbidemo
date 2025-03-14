@@ -47,19 +47,10 @@ CREATE TABLE order_line (
     order_id uuid,
     product_id uuid,
     quantity integer,
+    price integer,
     created timestamp,
     updated timestamp
 );
 
-CREATE TABLE change_log (
-    id uuid PRIMARY KEY,
-    code varchar(16),
-    status varchar(16),
-    request varchar(255),
-    body varchar(255),
-    created timestamp,
-    updated timestamp
-);
-
-CREATE INDEX idx_change_log_code ON change_log(code);
-CREATE INDEX idx_change_log_status ON change_log(status);
+CREATE INDEX idx_order_line_order_id ON order_line(order_id);
+CREATE INDEX idx_order_line_product_id ON order_line(product_id);
