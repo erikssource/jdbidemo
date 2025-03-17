@@ -14,6 +14,9 @@ public class OrderLine {
     private UUID orderId;
     private UUID productId;
     private Integer quantity;
+    private String name;
+    private String description;
+    private Integer price;
     private Instant created;
     private Instant updated;
 }
