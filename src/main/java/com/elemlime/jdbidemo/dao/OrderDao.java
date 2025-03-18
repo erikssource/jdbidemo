@@ -3,14 +3,19 @@ package com.elemlime.jdbidemo.dao;
 import com.elemlime.jdbidemo.model.Customer;
 import com.elemlime.jdbidemo.model.Order;
 import com.elemlime.jdbidemo.model.OrderLine;
+import com.elemlime.jdbidemo.model.OrderStatus;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import org.jdbi.v3.core.result.LinkedHashMapRowReducer;
 import org.jdbi.v3.core.result.RowView;
 import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
 import org.jdbi.v3.sqlobject.customizer.Bind;
+import org.jdbi.v3.sqlobject.customizer.Timestamped;
+import org.jdbi.v3.sqlobject.statement.GetGeneratedKeys;
 import org.jdbi.v3.sqlobject.statement.SqlQuery;
+import org.jdbi.v3.sqlobject.statement.SqlUpdate;
 import org.jdbi.v3.sqlobject.statement.UseRowReducer;
 
 @RegisterBeanMapper(value = Order.class, prefix = "o")
@@ -32,7 +37,12 @@ public interface OrderDao {
 
   @SqlQuery(ORDER_SELECT + " WHERE o.id = :id")
   @UseRowReducer(OrderReducer.class)
-  Order getById(@Bind UUID id);
+  Optional<Order> getById(@Bind UUID id);
+
+  @SqlUpdate("INSERT INTO orders (customer_id, status, created, updated) VALUES (:customerId, :status, :now, :now)")
+  @Timestamped
+  @GetGeneratedKeys("id")
+  UUID createOrder(@Bind UUID customerId, @Bind OrderStatus status);
 
   class OrderReducer implements LinkedHashMapRowReducer<UUID, Order> {
 

@@ -11,6 +11,6 @@ public interface ProductDao {
         SELECT p.id, p.name, p.description, c.name AS category, p.price, p.inventory, p.created, p.updated
         FROM product p INNER JOIN category c ON p.category_id = c.id
         ORDER BY c.name, p.name
-              """)
+        """)
     List<Product> getAll();
 }
