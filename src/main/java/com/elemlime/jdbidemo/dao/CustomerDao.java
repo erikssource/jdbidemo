@@ -23,9 +23,9 @@ public interface CustomerDao {
 
   @SqlQuery(
       """
-      SELECT id, first_name, last_name, email, created, updated FROM customer WHERE email = :email
+      SELECT id, first_name, last_name, email, created, updated FROM customer WHERE id = :id
       """)
-  Optional<Customer> getCustomerByEmail(@Bind String email);
+  Optional<Customer> getCustomerById(@Bind UUID id);
 
   @SqlUpdate(
       """
@@ -35,17 +35,22 @@ public interface CustomerDao {
       """)
   @GetGeneratedKeys
   @Timestamped
-  Customer updateCustomer(@Bind UUID id, @Bind String firstName, @Bind String lastName, @Bind String email);
+  Customer updateCustomer(@Bind UUID id, @Bind String email, @Bind String firstName, @Bind String lastName);
 
   @SqlUpdate(
       """
       INSERT INTO customer (first_name, last_name, email, created, updated)
-            VALUES  (:firstName, :lastName, :email, :now, :now)
-      ON CONFLICT (email) DO UPDATE SET last_name = :lastName, first_name = :firstName, updated = :now
-            RETURNING *
+      VALUES  (:firstName, :lastName, :email, :now, :now)
+      RETURNING *
       """)
   @GetGeneratedKeys
   @Timestamped
-  Customer createOrUpdateCustomer(
-      @Bind String firstName, @Bind String lastName, @Bind String email);
+  Customer createCustomer(@Bind String email, @Bind String firstName, @Bind String lastName);
+
+  @SqlUpdate(
+    """
+    DELETE FROM customer WHERE id = :id
+    """
+  )
+  void deleteCustomer(@Bind UUID id);
 }

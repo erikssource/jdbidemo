@@ -16,8 +16,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
+@EnableTransactionManagement
 public class JdbiConfiguration {
     private final static Logger log = LoggerFactory.getLogger(JdbiConfiguration.class);
 

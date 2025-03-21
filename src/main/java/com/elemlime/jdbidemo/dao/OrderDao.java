@@ -4,6 +4,7 @@ import com.elemlime.jdbidemo.model.Customer;
 import com.elemlime.jdbidemo.model.Order;
 import com.elemlime.jdbidemo.model.OrderLine;
 import com.elemlime.jdbidemo.model.OrderStatus;
+import com.elemlime.jdbidemo.model.dto.OrderLineDto;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -12,8 +13,10 @@ import org.jdbi.v3.core.result.LinkedHashMapRowReducer;
 import org.jdbi.v3.core.result.RowView;
 import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
 import org.jdbi.v3.sqlobject.customizer.Bind;
+import org.jdbi.v3.sqlobject.customizer.BindMethods;
 import org.jdbi.v3.sqlobject.customizer.Timestamped;
 import org.jdbi.v3.sqlobject.statement.GetGeneratedKeys;
+import org.jdbi.v3.sqlobject.statement.SqlCall;
 import org.jdbi.v3.sqlobject.statement.SqlQuery;
 import org.jdbi.v3.sqlobject.statement.SqlUpdate;
 import org.jdbi.v3.sqlobject.statement.UseRowReducer;
@@ -43,6 +46,28 @@ public interface OrderDao {
   @Timestamped
   @GetGeneratedKeys("id")
   UUID createOrder(@Bind UUID customerId, @Bind OrderStatus status);
+
+  @SqlUpdate("UPDATE orders SET status=:status, updated=:now WHERE id = :id")
+  @Timestamped
+  void updateOrderStatus(@Bind UUID id, @Bind OrderStatus status);
+
+  @SqlUpdate("UPDATE orders SET updated=:now WHERE id = :id")
+  @Timestamped
+  void updateOrder(@Bind UUID id);
+
+  @SqlUpdate("""
+    INSERT INTO order_line (order_id, product_id, quantity, price, created, updated)
+    VALUES (:orderId, :productId, :quantity, :price, :now, :now)
+    """)
+  @Timestamped
+  @GetGeneratedKeys("id")
+  UUID addOrderLine(@BindMethods OrderLineDto orderLineDto);
+
+  @SqlCall("{call delete_order_by_id(:orderId)}")
+  void deleteOrder(@Bind UUID orderId);
+
+  @SqlCall("{call delete_orders_by_customer(:customerId)}")
+  void deleteOrdersByCustomer(@Bind UUID customerId);
 
   class OrderReducer implements LinkedHashMapRowReducer<UUID, Order> {
 
