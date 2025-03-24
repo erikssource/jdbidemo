@@ -1,11 +1,15 @@
 package com.elemlime.jdbidemo.controller;
 
 import com.elemlime.jdbidemo.model.Order;
+import com.elemlime.jdbidemo.model.request.CreateOrder;
+import com.elemlime.jdbidemo.model.response.ResponseId;
 import com.elemlime.jdbidemo.service.OrderService;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,6 +30,12 @@ public class OrderController {
     @GetMapping("/{orderId}")
     public Order getOne(@PathVariable("orderId") UUID orderId) {
         return orderService.findOrder(orderId);
+    }
+
+    @PostMapping
+    public ResponseId create(@RequestBody CreateOrder createOrder) {
+        var id = orderService.createOrder(createOrder.getCustomerId());
+        return new ResponseId(id);
     }
 }
 

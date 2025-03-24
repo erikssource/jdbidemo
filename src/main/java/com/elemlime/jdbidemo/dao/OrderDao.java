@@ -25,13 +25,14 @@ import org.jdbi.v3.sqlobject.statement.UseRowReducer;
 @RegisterBeanMapper(value = Customer.class, prefix = "c")
 @RegisterBeanMapper(value = OrderLine.class, prefix = "l")
 public interface OrderDao {
-  String ORDER_SELECT = """
-      SELECT o.id o_id, o.status o_status, l.id l_id, l.product_id l_product_id, p.name p_name,
-               p.description p_description, l.order_id l_order_id, l.quantity l_quantity, l.price l_price,
-               l.created l_created, l.updated l_updated, o.created o_created,
-               o.updated o_updated, c.id c_id, c.first_name c_firstName, c.last_name c_lastName,
-               c.email c_email, c.created c_created, c.updated c_updated
-      FROM orders o INNER JOIN customer c ON o.customer_id=c.id INNER JOIN order_line l ON o.id = l.order_id INNER JOIN product p ON l.product_id = p.id
+  String ORDER_SELECT =
+      """
+      SELECT o.id o_id, o.status o_status, o.created o_created, o.updated o_updated, l.id l_id,
+      l.product_id l_product_id, p.name l_name, p.description l_description, l.quantity l_quantity,
+      l.price l_price, l.created l_created, l.updated l_updated, c.id c_id, c.first_name c_firstName,
+      c.last_name c_lastName, c.email c_email, c.created c_created, c.updated c_updated
+      FROM orders o INNER JOIN customer c ON o.customer_id=c.id
+      LEFT OUTER JOIN order_line l ON o.id = l.order_id LEFT OUTER JOIN product p ON l.product_id = p.id
     """;
 
   @SqlQuery(ORDER_SELECT)
@@ -81,8 +82,7 @@ public interface OrderDao {
       }
       if (rowView.getColumn("l_id", UUID.class) != null) {
         var orderLine = rowView.getRow(OrderLine.class);
-        orderLine.setName(rowView.getColumn("p_name", String.class));
-        orderLine.setDescription(rowView.getColumn("p_description", String.class));
+        orderLine.setOrderId(order.getId());
         order.getOrderLines().add(orderLine);
       }
     }
