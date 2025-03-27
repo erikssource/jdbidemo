@@ -2,6 +2,7 @@ package com.elemlime.jdbidemo.service;
 
 import com.elemlime.jdbidemo.dao.CustomerDao;
 import com.elemlime.jdbidemo.dao.OrderDao;
+import com.elemlime.jdbidemo.dao.ProductDao;
 import com.elemlime.jdbidemo.model.Order;
 import com.elemlime.jdbidemo.model.OrderStatus;
 import com.elemlime.jdbidemo.model.dto.OrderLineDto;
@@ -15,10 +16,14 @@ import org.springframework.web.client.HttpClientErrorException;
 public class OrderService {
   private final OrderDao orderDao;
   private final CustomerDao customerDao;
+  private final ProductDao productDao;
 
-  public OrderService(OrderDao orderDao, CustomerDao customerDao) {
+  public OrderService(OrderDao orderDao,
+                      CustomerDao customerDao,
+                      ProductDao productDao) {
     this.orderDao = orderDao;
     this.customerDao = customerDao;
+    this.productDao = productDao;
   }
 
   public List<Order> getAll() {
@@ -46,7 +51,7 @@ public class OrderService {
     return orderDao.createOrder(customer.getId(), OrderStatus.CREATED);
   }
 
-  public UUID addOrderLine(UUID orderId, UUID productId, int quantity, int price) {
+  public UUID addOrderLine(UUID orderId, UUID productId, int quantity) {
     var order =
         orderDao
             .getById(orderId)
@@ -56,7 +61,8 @@ public class OrderService {
                         HttpStatus.NOT_FOUND,
                         String.format("Order with id %s not found", orderId)));
     // TODO: Remove quantity from product inventory and make transactional
-    var orderLine = new OrderLineDto(order.getId(), productId, quantity, price);
+    var product = productDao.getById(productId).orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND, String.format("Product with id %s not found", productId)));
+    var orderLine = new OrderLineDto(order.getId(), productId, quantity, product.getPrice());
     return orderDao.addOrderLine(orderLine);
   }
 
