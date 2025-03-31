@@ -1,7 +1,6 @@
 package com.elemlime.jdbidemo.controller;
 
 import com.elemlime.jdbidemo.model.Order;
-import com.elemlime.jdbidemo.model.dto.OrderLineDto;
 import com.elemlime.jdbidemo.model.request.AddOrderLine;
 import com.elemlime.jdbidemo.model.request.CreateOrder;
 import com.elemlime.jdbidemo.model.response.ResponseId;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

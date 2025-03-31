@@ -64,10 +64,10 @@ public interface OrderDao {
   @GetGeneratedKeys("id")
   UUID addOrderLine(@BindMethods OrderLineDto orderLineDto);
 
-  @SqlCall("{call delete_order_by_id(:orderId)}")
+  @SqlCall("call delete_order_by_id(:orderId)")
   void deleteOrder(@Bind UUID orderId);
 
-  @SqlCall("{call delete_orders_by_customer(:customerId)}")
+  @SqlCall("call delete_orders_by_customer(:customerId)")
   void deleteOrdersByCustomer(@Bind UUID customerId);
 
   class OrderReducer implements LinkedHashMapRowReducer<UUID, Order> {
