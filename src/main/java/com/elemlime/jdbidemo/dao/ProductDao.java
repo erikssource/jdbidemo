@@ -1,6 +1,7 @@
 package com.elemlime.jdbidemo.dao;
 
 import com.elemlime.jdbidemo.model.Product;
+import com.elemlime.jdbidemo.model.dto.ProductDto;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -35,14 +36,14 @@ public interface ProductDao {
       """)
   @Timestamped
   @GetGeneratedKeys("id")
-  UUID createProduct(@BindBean Product product);
+  UUID createProduct(@BindBean ProductDto product);
 
   @SqlUpdate("""
       UPDATE product SET category_id = :categoryId, name = :name, description = :description, price = :price, inventory = :inventory, updated = :now
-      WHERE id = :id
+      WHERE id = :productId
       """)
   @Timestamped
-  void updateProduct(@BindBean Product product);
+  void updateProduct(@Bind UUID productId, @BindBean ProductDto product);
 
   @SqlUpdate("""
     UPDATE product SET price = :price, updated = :now WHERE id = :productId

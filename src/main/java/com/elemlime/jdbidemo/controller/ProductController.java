@@ -3,7 +3,9 @@ package com.elemlime.jdbidemo.controller;
 import com.elemlime.jdbidemo.model.Product;
 import com.elemlime.jdbidemo.service.ProductService;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,6 +21,11 @@ public class ProductController {
     @GetMapping
     public List<Product> getAll() {
         return productService.getAll();
+    }
+
+    @GetMapping("/{id}")
+    public Product getById(@PathVariable UUID id) {
+        return productService.findProduct(id);
     }
     
 }
