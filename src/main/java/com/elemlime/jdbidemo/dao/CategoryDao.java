@@ -3,13 +3,14 @@ package com.elemlime.jdbidemo.dao;
 import com.elemlime.jdbidemo.model.Category;
 import java.util.List;
 import java.util.Optional;
+import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
 import org.jdbi.v3.sqlobject.config.RegisterConstructorMapper;
 import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.customizer.Timestamped;
 import org.jdbi.v3.sqlobject.statement.GetGeneratedKeys;
 import org.jdbi.v3.sqlobject.statement.SqlQuery;
 
-@RegisterConstructorMapper(Category.class)
+@RegisterBeanMapper(Category.class)
 public interface CategoryDao {
   @SqlQuery(
       """

@@ -49,12 +49,12 @@ public class ProductController {
             product.getCategoryId(), product.getPrice(), product.getInventory());
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/{id}/price")
     public void updatePrice(@PathVariable UUID id, @RequestBody UpdatePrice updatePrice) {
         productService.updatePrice(id, updatePrice.getPrice());
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/{id}/inventory")
     public void updateInventory(@PathVariable UUID id, @RequestBody UpdateInventory updateInventory) {
         productService.updateInventory(id, updateInventory.getInventory());
     }
