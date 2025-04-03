@@ -4,6 +4,7 @@ import com.elemlime.jdbidemo.dao.CategoryDao;
 import com.elemlime.jdbidemo.model.Category;
 import com.elemlime.jdbidemo.service.CategoryService;
 import java.util.List;
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.jdbi.v3.core.JdbiException;
 import org.springframework.http.HttpStatus;
@@ -14,28 +15,39 @@ import org.springframework.web.client.HttpServerErrorException;
 @Slf4j
 @Service
 public class CategoryServiceImpl implements CategoryService {
-    private final CategoryDao categoryDao;
-    
-    public CategoryServiceImpl(CategoryDao categoryDao) {
-        this.categoryDao = categoryDao;
-    }
-    
-    @Override
-    public List<Category> getAll() {
-        return categoryDao.getAll();
-    }
+  private final CategoryDao categoryDao;
 
-    @Override
-    public Category createCategory(String categoryName) {
-        try  {
-          var optCategory = categoryDao.getCategoryByName(categoryName);
-          if (optCategory.isPresent()) {
-            throw new HttpClientErrorException(HttpStatus.CONFLICT, "categoryName already exists");
-          }
-          return categoryDao.insertCategory(categoryName);
-        } catch (JdbiException ex) {
-            log.error("Unable to insert Category into database", ex);
-            throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Error creating Category");
-        }
+  public CategoryServiceImpl(CategoryDao categoryDao) {
+    this.categoryDao = categoryDao;
+  }
+
+  @Override
+  public List<Category> getAll() {
+    return categoryDao.getAll();
+  }
+
+  @Override
+  public Category getById(UUID id) {
+    return categoryDao
+        .getCategoryById(id)
+        .orElseThrow(
+            () ->
+                new HttpClientErrorException(
+                    HttpStatus.NOT_FOUND, "Category not found for id: " + id));
+  }
+
+  @Override
+  public Category createCategory(String categoryName) {
+    try {
+      var optCategory = categoryDao.getCategoryByName(categoryName);
+      if (optCategory.isPresent()) {
+        throw new HttpClientErrorException(HttpStatus.CONFLICT, "categoryName already exists");
+      }
+      return categoryDao.createCategory(categoryName);
+    } catch (JdbiException ex) {
+      log.error("Unable to insert Category into database", ex);
+      throw new HttpServerErrorException(
+          HttpStatus.INTERNAL_SERVER_ERROR, "Error creating Category");
     }
+  }
 }
