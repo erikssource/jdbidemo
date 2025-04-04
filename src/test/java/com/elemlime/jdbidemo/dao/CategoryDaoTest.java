@@ -24,7 +24,7 @@ public class CategoryDaoTest {
 
   @BeforeEach
   void setUp() {
-    categoryTestDao.clearAll();
+    categoryTestDao.deleteAll();
   }
 
   @Test
