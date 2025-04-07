@@ -35,7 +35,7 @@ public class CategoryDaoTest {
 
   @Test
   void testGetAll_WithData() {
-    TestData.loadCategories(categoryDao);
+    TestData.loadCategories(categoryTestDao);
     var result = categoryDao.getAll();
     assertEquals(2, result.size());
     assertEquals("Boxes", result.get(0).getName());
@@ -44,7 +44,7 @@ public class CategoryDaoTest {
 
   @Test
   void testGetCategoryByName_Found() {
-    TestData.loadCategories(categoryDao);
+    TestData.loadCategories(categoryTestDao);
     var result = categoryDao.getCategoryByName("Boxes");
     assertTrue(result.isPresent());
     assertEquals("Boxes", result.get().getName());
@@ -52,14 +52,14 @@ public class CategoryDaoTest {
 
   @Test
   void testGetCategoryByName_NotFound() {
-    TestData.loadCategories(categoryDao);
+    TestData.loadCategories(categoryTestDao);
     var result = categoryDao.getCategoryByName("Machines");
     assertTrue(result.isEmpty());
   }
 
   @Test
   void testGetCategoryById_Found() {
-    TestData.loadCategories(categoryDao);
+    TestData.loadCategories(categoryTestDao);
     var results = categoryDao.getAll();
 
     var result = categoryDao.getCategoryById(results.getFirst().getId());
@@ -69,7 +69,7 @@ public class CategoryDaoTest {
 
   @Test
   void testGetCategoryById_NotFound() {
-    TestData.loadCategories(categoryDao);
+    TestData.loadCategories(categoryTestDao);
     var result = categoryDao.getCategoryById(UUID.randomUUID());
     assertTrue(result.isEmpty());
   }

@@ -33,7 +33,7 @@ public class CategoryServiceTest {
 
   @Test
   void testListCategories() {
-    TestData.loadCategories(categoryDao);
+    TestData.loadCategories(categoryTestDao);
     var results = categoryService.getAll();
 
     assertEquals(2, results.size());
@@ -43,7 +43,7 @@ public class CategoryServiceTest {
 
   @Test
   void testGetCategoryById() {
-    TestData.loadCategories(categoryDao);
+    TestData.loadCategories(categoryTestDao);
     var results = categoryService.getAll();
 
     var result = categoryService.getById(results.getFirst().getId());
