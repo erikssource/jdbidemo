@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.elemlime.jdbidemo.TestDaoConfig;
 import com.elemlime.jdbidemo.TestcontainersConfiguration;
-import com.elemlime.jdbidemo.test.dao.CustomerTestDao;
 import com.elemlime.jdbidemo.test.dao.TestData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,12 +16,14 @@ import org.springframework.context.annotation.Import;
 @SpringBootTest
 public class CustomerDaoTest {
 
-  @Autowired private CustomerDao customerDao;
-  @Autowired private CustomerTestDao customerTestDao;
+  @Autowired
+  private CustomerDao customerDao;
+  @Autowired
+  private TestData testData;
 
   @BeforeEach
   void setUp() {
-    customerTestDao.deleteAll();
+    testData.deleteAll();
   }
 
   @Test
@@ -33,7 +34,7 @@ public class CustomerDaoTest {
 
   @Test
   void testAll_WithData() {
-    TestData.loadCustomers(customerTestDao);
+    testData.loadCustomers();
     var result = customerDao.getAll();
     assertEquals(2, result.size());
     assertEquals(TestData.JDOE_CUSTOMER_ID, result.get(0).getId());
@@ -54,7 +55,7 @@ public class CustomerDaoTest {
 
   @Test
   void testGetCustomerById_WithData() {
-    TestData.loadCustomers(customerTestDao);
+    testData.loadCustomers();
     var result = customerDao.getCustomerById(TestData.MSMITH_CUSTOMER_ID);
     assertTrue(result.isPresent());
     assertEquals(TestData.MSMITH_CUSTOMER_ID, result.get().getId());
@@ -65,7 +66,7 @@ public class CustomerDaoTest {
 
   @Test
   void testUpdateCustomer_Success() {
-    TestData.loadCustomers(customerTestDao);
+    testData.loadCustomers();
     var result =
         customerDao.updateCustomer(
             TestData.JDOE_CUSTOMER_ID, "jdover@example.com", "James", "Dover");
@@ -86,7 +87,7 @@ public class CustomerDaoTest {
 
   @Test
   void testDeleteCustomer_Success() {
-    TestData.loadCustomers(customerTestDao);
+    testData.loadCustomers();
     customerDao.deleteCustomer(TestData.JDOE_CUSTOMER_ID);
     var result = customerDao.getCustomerById(TestData.JDOE_CUSTOMER_ID);
     assertTrue(result.isEmpty());

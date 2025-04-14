@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Order {
     private UUID id;
-    private String status;
+    private OrderStatus status;
     private Instant created;
     private Instant updated;  
     private Customer customer;

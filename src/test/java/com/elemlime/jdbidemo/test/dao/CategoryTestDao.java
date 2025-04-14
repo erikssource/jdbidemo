@@ -16,5 +16,5 @@ public interface CategoryTestDao {
     ON CONFLICT DO NOTHING
     """)
   @Timestamped
-  void batchInsert(@Bind("categoryId") List<UUID> ids, @Bind("name") List<String> names);
+  void batchInsert(@Bind("id") List<UUID> ids, @Bind("name") List<String> names);
 }
