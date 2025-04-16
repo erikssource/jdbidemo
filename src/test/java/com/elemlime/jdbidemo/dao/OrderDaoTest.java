@@ -1,8 +1,6 @@
 package com.elemlime.jdbidemo.dao;
 
 import static org.assertj.core.api.Assertions.within;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.elemlime.jdbidemo.TestDaoConfig;
@@ -11,6 +9,7 @@ import com.elemlime.jdbidemo.model.OrderStatus;
 import com.elemlime.jdbidemo.test.dao.TestData;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +18,7 @@ import org.springframework.context.annotation.Import;
 
 @Import({TestcontainersConfiguration.class, TestDaoConfig.class})
 @SpringBootTest
-public class OrderDaoTest {
+public class OrderDaoTest extends AbstractDaoTest {
   @Autowired
   private OrderDao orderDao;
   @Autowired
@@ -30,9 +29,10 @@ public class OrderDaoTest {
     testData.deleteAll();
   }
 
+  @Test
   void testGetAll_Empty() {
     var result = orderDao.getAll();
-    assertTrue(result.isEmpty());
+    assertThat(result).isEmpty();
   }
 
   @Test
@@ -40,34 +40,50 @@ public class OrderDaoTest {
     testData.loadOrders();
     var result = orderDao.getAll();
     assertThat(result).hasSize(2);
-    var order1 = result.getFirst();
-    assertThat(order1.getId()).isEqualTo(TestData.ORDER_1_ID);
-    assertThat(order1.getStatus()).isEqualTo(OrderStatus.COMPLETED);
-    assertThat(order1.getCreated()).isCloseTo(Instant.now(), within(1, ChronoUnit.MINUTES));
-    assertThat(order1.getUpdated()).isCloseTo(Instant.now(), within(1, ChronoUnit.MINUTES));
-
-    var customer = order1.getCustomer();
-    assertThat(customer.getEmail()).isEqualTo("jdoe@example.com");
-    assertThat(customer.getId()).isEqualTo(TestData.JDOE_CUSTOMER_ID);
-    assertThat(customer.getFirstName()).isEqualTo("John");
-    assertThat(customer.getLastName()).isEqualTo("Doe");
-    assertThat(customer.getCreated()).isCloseTo(Instant.now(), within(1, ChronoUnit.MINUTES));
-    assertThat(customer.getUpdated()).isCloseTo(Instant.now(), within(1, ChronoUnit.MINUTES));
-
-    assertThat(order1.getOrderLines()).hasSize(2);
-
-    var orderLine1 = order1.getOrderLines().getFirst();
-    assertThat(orderLine1.getId()).isEqualTo(TestData.ORDER_1_LINE_1_ID);
-
-    var orderLine2 = result.get(0).getOrderLines().get(1);
-    assertThat(orderLine2.getId()).isEqualTo(TestData.ORDER_1_LINE_2_ID);
-
-    var order2 = result.get(1);
-    assertThat(order2.getId()).isEqualTo(TestData.ORDER_2_ID);
+    verifyOrder1(result.get(0));
+    verifyOrder2(result.get(1));
   }
 
-  void testCreateOrder() {
+  @Test
+  void testGetById_Order1() {
+    testData.loadOrders();
+    var result = orderDao.getById(TestData.ORDER_1_ID);
+    assertThat(result).isPresent();
+    verifyOrder1(result.get());
+  }
 
+  @Test
+  void testGetById_Order2() {
+    testData.loadOrders();
+    var result = orderDao.getById(TestData.ORDER_2_ID);
+    assertThat(result).isPresent();
+    verifyOrder2(result.get());
+  }
+
+  @Test
+  void testGetById_NotFound() {
+    testData.loadOrders();
+    var result = orderDao.getById(UUID.randomUUID());
+    assertThat(result).isEmpty();
+  }
+
+  @Test
+  void testCreateOrder() {
+    testData.loadOrders();
+    var id = orderDao.createOrder(TestData.JDOE_CUSTOMER_ID, OrderStatus.CREATED);
+    assertThat(id).isNotNull();
+
+    var result = orderDao.getById(id);
+    assertThat(result).isPresent();
+    var order = result.get();
+    assertThat(order.getId()).isEqualTo(id);
+    assertThat(order.getStatus()).isEqualTo(OrderStatus.CREATED);
+    assertThat(order.getCreated()).isCloseTo(Instant.now(), within(1, ChronoUnit.MINUTES));
+    assertThat(order.getUpdated()).isCloseTo(Instant.now(), within(1, ChronoUnit.MINUTES));
+
+    assertThat(order.getOrderLines()).isEmpty();
+
+    verifyCustomerJDoe(order.getCustomer());
   }
 
   void testUpdateOrderStatus() {

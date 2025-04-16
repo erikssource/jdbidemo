@@ -35,7 +35,7 @@ public interface OrderDao {
       LEFT OUTER JOIN order_line l ON o.id = l.order_id LEFT OUTER JOIN product p ON l.product_id = p.id
     """;
 
-  @SqlQuery(ORDER_SELECT)
+  @SqlQuery(ORDER_SELECT + "ORDER BY o.updated")
   @UseRowReducer(OrderReducer.class)
   List<Order> getAll();
 
