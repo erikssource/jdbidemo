@@ -1,0 +1,23 @@
+meta {
+  name: Update Customer
+  type: http
+  seq: 3
+}
+
+put {
+  url: http://localhost:8080/api/v1/customer/:id
+  body: json
+  auth: none
+}
+
+params:path {
+  id: 233b623d-da2e-4c7f-85e7-9b68a3356295
+}
+
+body:json {
+  {
+    "email" : "fjones@example.com",
+    "firstName" : "Felicity",
+    "lastName" : "Jones"
+  }
+}

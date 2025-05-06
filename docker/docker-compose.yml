@@ -1,0 +1,14 @@
+services:
+  postgres:
+    image: postgres:17
+    volumes:
+      - jdemdb:/var/lib/postgres/jdemdb
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=jdemuser
+      - POSTGRES_PASSWORD=jdempass
+      - POSTGRES_DB=jdemdb
+volumes:
+  jdemdb:
+

@@ -1,0 +1,23 @@
+meta {
+  name: Add Order Line
+  type: http
+  seq: 4
+}
+
+post {
+  url: http://localhost:8080/api/v1/orders/:id/line
+  body: json
+  auth: none
+}
+
+params:path {
+  id: 6842d114-f147-460e-bb84-045ae12fecda
+}
+
+body:json {
+  {
+    "orderId" : "6842d114-f147-460e-bb84-045ae12fecda",
+    "productId" : "ae476411-8d03-4919-b571-d6aaccd074f4",
+    "quantity" : 3
+  }
+}

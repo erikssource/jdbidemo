@@ -1,0 +1,52 @@
+Table category {
+  id uuid [pk]
+  name varchar [unique]
+  created timestamp
+  updated timestamp
+}
+
+Table product {
+  id uuid [pk]
+  name varchar
+  description varchar
+  category_id uuid
+  price integer
+  inventory integer
+  created timestamp
+  updated timestamp
+}
+
+Table customer {
+  id uuid [pk]
+  first_name varchar
+  last_name varchar
+  email varchar [unique]
+  created timestamp
+  updated timestamp
+}
+
+Table orders {
+  id uuid [pk]
+  customer_id uuid
+  status varchar
+  created timestamp
+  updated timestamp
+}
+
+Table order_line {
+  id uuid [pk]
+  order_id uuid
+  product_id uuid
+  quantity integer
+  price integer
+  created timestamp
+  updated timestamp
+}
+
+Ref: category.id < product.category_id
+
+Ref: customer.id < orders.customer_id
+
+Ref: orders.id < order_line.order_id
+
+Ref: product.id < order_line.product_id

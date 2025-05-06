@@ -1,0 +1,19 @@
+meta {
+  name: Create Customer
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:8080/api/v1/customer
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email" : "fjones@example.com",
+    "firstName" : "Fred",
+    "lastName" : "Jones"
+  }
+}

@@ -1,0 +1,17 @@
+meta {
+  name: Create Order
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:8080/api/v1/orders
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "customerId": "5c59adb7-4643-4685-9770-62950973123d"
+  }
+}
