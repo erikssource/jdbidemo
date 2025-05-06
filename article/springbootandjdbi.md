@@ -6,7 +6,7 @@ If you've worked on some Spring Boot projects, you've probably needed to interac
 
 I've worked on a number of Spring projects and I can remember one where shortly after I joined the team I was introduced to a big concern with a project under development. The problem was that Hibernate was generating queries that were very inefficient for the Oracle database it was interacting with. The team manager confessed that using Hibernate might have been a misstep. Hiding the details of interacting with the database can mean hiding inefficient queries or excessive queries. Eventually that project was tamed by some Oracle experts with native queries, but it felt more like we were fighting the tool rather than taking advantage of it.
 
-If you don't want to hide details, then you can just use JDBC to interact with the database, but that requires a lot of code to manage connections, create statements, retrieve fetched data, and map that data into objects. JDBCTemplate can cut out a lot of boilerplate but it will means a lot of work.
+If you don't want to hide details, then you can just use JDBC to interact with the database, but that requires a lot of code to manage connections, create statements, retrieve fetched data, and map that data into objects. JDBCTemplate can cut out a lot of boilerplate but it will still mean a lot of work.
 
 Awhile ago I worked on a project with a data access tool that struck a balance that kept the developers in charge of how the Spring application interacted with the project's relational databases, but still took care of a lot of the details. That tool is JDBI.
 
@@ -19,6 +19,8 @@ What it's good at is letting the developer define all the SQL used to interact w
 ## Time for some Code
 
 There's nothing like getting your hands dirty with some code to help understand how things work, so let's get to a demo. This demo code is a Spring Boot project that implements a simple ordering system with products, customers, and orders. I've tried to make a demo that isn't so trivial that it doesn't cover much, but at the same time not letting the demo get very big. So be prepared to look at a fair amount of code, but don't expect anything like a real application.
+
+All of the code is available at: https://github.com/erikssource/jdbidemo
 
 ### Database Schema
 
@@ -2335,8 +2337,6 @@ Then we delete Order 1. We verify that Order 1 no longer exists and that Order 2
 
 ## Conclusion
 
-I hope this has been a helpful look at using Jdbi to manage data in a Spring Boot application. Jdbi provides a useful middle step between using straight JDBC or JdbcTemplate and a full-fledged ORM like Hibernate. All of the source code and a markdown formatted version of the article are available at
+I hope this has been a helpful look at using Jdbi to manage data in a Spring Boot application. Jdbi provides a useful middle step between using straight JDBC or JdbcTemplate and a full-fledged ORM like Hibernate. All of the source code and a markdown formatted version of the article are available at https://github.com/erikssource/jdbidemo
 
-TODO
-
-There's also many more features in Jdbi than this demo looks at, so visit jdbi.org to look through the documentation. Happy coding!
+There's also many more features in Jdbi than this demo looks at, so visit https://jdbi.org to look through the documentation. Happy coding!
