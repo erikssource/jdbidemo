@@ -2,36 +2,35 @@
 
 ## Databases and Spring Boot
 
-If you've worked on some Spring Boot projects, you've probably needed to interact with a database and there's a good chance that interaction was managed by ORM (object-relational mapping) software and most likely that software was Hibernate. Hibernate is powerful and it does a great job of hiding the details of interacting with a relational database, but it isn't always the right tool for the job. Often, it is tool that is used because it is the default way of interacting with relational databases in Spring Boot rather than being chosen because it's the best tool for the job. That's not to say that it can't be the best tool for the job, but it isn't always the best.
+If you've worked on a few Spring Boot projects, you've probably needed to interact with a database and there's a good chance that interaction was managed by ORM (object-relational mapping) software, and most likely that software was Hibernate. Hibernate is powerful and it does a great job of hiding the details of interacting with a relational database, but it isn't always the right tool for the job. Often, it is tool that is used because it is the default way of interacting with relational databases in Spring Boot. That's not to say that it can't be the correct tool for the job, but it isn't always the best fit.
 
-I've worked on a number of Spring projects and I can remember one where shortly after I joined the team I was introduced to a big concern with a project under development. The problem was that Hibernate was generating queries that were very inefficient for the Oracle database it was interacting with. The team manager confessed that using Hibernate might have been a misstep. Hiding the details of interacting with the database can mean hiding inefficient queries or excessive queries. Eventually that project was tamed by some Oracle experts with native queries, but it felt more like we were fighting the tool rather than taking advantage of it.
+I've worked on a number of Spring projects and I can remember one where, shortly after I joined the team, I was introduced to a looming concern with a project under development. Hibernate was generating queries that were very inefficient for the Oracle database it was interacting with. The team manager confessed that using Hibernate might have been a misstep. Hiding the details of interacting with the database can mean hiding inefficient queries or excessive queries. Eventually that project was tamed by some Oracle experts with native queries, but it felt more like we were fighting the tool rather than taking advantage of it.
 
-If you don't want to hide details, then you can just use JDBC to interact with the database, but that requires a lot of code to manage connections, create statements, retrieve fetched data, and map that data into objects. JDBCTemplate can cut out a lot of boilerplate but it will still mean a lot of work.
+If you don't want to hide details, then you can just use plain old JDBC to interact with the database, but that requires a lot of code to manage connections, create statements, retrieve fetched data, and map that data into objects. JDBCTemplate can cut out a lot of boilerplate but it still means a lot of work.
 
-Awhile ago I worked on a project with a data access tool that struck a balance that kept the developers in charge of how the Spring application interacted with the project's relational databases, but still took care of a lot of the details. That tool is JDBI.
+Awhile ago, I worked on a project with a data access tool that struck a balance that kept the developers in charge of how the Spring application interacted with the project's relational databases, but still took care of a lot of the details. That tool was JDBI.
 
 ## So What is JDBI
 
 Jdbi is a tool that gives you the feel of ORM without any magic that hides the database from you. You can get a more complete description on the project website: https://jdbi.org/#_introduction_to_jdbi_3
 
-What it's good at is letting the developer define all the SQL used to interact with the database while handling all the boilerplate and to a large extent most of the mapping of data to objects. That sounds like ORM, but it's not really modeling objects as data in a relational database. Rather, it is just handling the boilerplate code to map columns in a row to properties in a bean or methods in a record or POJO.
+What it's good at is letting the developer define all the SQL used to interact with the database while handling all the boilerplate and to a large extent most of the mapping of data to objects. That sounds like ORM, but it's not really modeling objects as data in a relational database. Rather, it is just handling the boilerplate code to map columns in a row to properties in a bean or methods in a record or POJO (Plain Old Java Object).
 
 ## Time for some Code
 
 There's nothing like getting your hands dirty with some code to help understand how things work, so let's get to a demo. This demo code is a Spring Boot project that implements a simple ordering system with products, customers, and orders. I've tried to make a demo that isn't so trivial that it doesn't cover much, but at the same time not letting the demo get very big. So be prepared to look at a fair amount of code, but don't expect anything like a real application.
 
-All of the code is available at: https://github.com/erikssource/jdbidemo
-
 ### Database Schema
 
 ![Database Diagram](./jdbidemo.png)
+
 This is the database schema we'll be using in the demo. We have products that each have a category, customers, orders that each belong to a customer, and finally order line items that belong to an order and point to a particular product. Each of these entities has few simple attributes.
 
 ### The Application Project
 
 Our application will be created with Spring Boot and we'll use Postgres for our database. To manage our project we'll use Maven and we'll use Java 21 to code it. All pretty standard fare.
 
-The application will perform some basic CRUD functionality for categories, products, customers, and orders along with managing order line items. It will then prodvide a REST api for invoking those operations and we'll create unit tests for our Jdbi code.
+The application will perform some basic CRUD functionality for categories, products, customers, and orders along with managing order line items. It will then provide a REST api for invoking those operations and we'll create unit tests for our Jdbi code.
 
 We'll include Spring Boot Web Starter, Spring Boot JPA Starter, Spring Boot Validation Starter, Flyway for database migrations, Spring Boot devtools, Lombok to reduce boilerplate, and Jdbi of course.
 
@@ -175,7 +174,7 @@ The Maven pom.xml ends up like this.
 
 ```
 
-Let's focus in on the Jdbi dependencies since this article is about using Jdbi.
+Let's focus in on the Jdbi dependencies since this article is all about using Jdbi.
 
 ```xml
 <dependency>
@@ -199,7 +198,7 @@ Let's focus in on the Jdbi dependencies since this article is about using Jdbi.
 - jdbi3-postgres - This will add support for Postgres databases for Jdbi.
 - jdbi3-sqlobject - This brings in row to object mapping for Jdbi. Bringing in this library will give Jdbi an ORM-like feel.
 
-The rest of the project configuration is pretty normal for any Spring Boot project. If you are wondering about the way that surefire is configured. That's for compatibility with future Java versions. It avoids a deprecation warning in Java 21.
+The rest of the project configuration is pretty normal for any Spring Boot project. If you are wondering about that surefire configuration, that's for compatibility with future Java versions. It avoids a deprecation warning in Java 21.
 
 ```xml
 <plugin>
@@ -324,7 +323,7 @@ CREATE INDEX idx_order_line_order_id ON order_line(order_id);
 CREATE INDEX idx_order_line_product_id ON order_line(product_id);
 ```
 
-This is a pretty straightforward implementation of our model. We're using uuids for our ids and we're created indexes for the join columns. The primary keys will have indexes so we don't need to create those. We also create some unique indexes on fields that need to be unique.
+This is a pretty straightforward implementation of our model. We're using uuids for our ids and we've created indexes for the join columns. The primary keys will have indexes so we don't need to create those. We also create some unique indexes on fields that need to be unique.
 
 We're not using foreign key constraints in this schema. You can find plenty of debates on the merits of using or not using foreign key constraints online, but not using them suits the purposes of this demo. Since that means we also don't have cascading deletes, we'll add a couple more migrations with procedures to help with deleting.
 
@@ -381,7 +380,7 @@ server.port=8080
 spring.jpa.open-in-view=false
 ```
 
-The application name and port are standard fare. We'll also set spring.jpa.open-in-view false so that Spring doesn't automatically create a hibernate session. Since we aren't using hibernate there's no reason to enable it.
+The application name and port are standard fare. We'll also set `spring.jpa.open-in-view=false` so that Spring doesn't automatically create a hibernate session. Since we aren't using hibernate there's no reason to enable it.
 
 Then, the main class for the Spring application is just the normal boilerplate. There's nothing special here to use Jdbi.
 
@@ -538,7 +537,7 @@ public class OrderLine {
     private Instant updated;
 }
 ```
-In the OrderLine model, we will embed some of the product data in our order line: the name, the description, and the product's id. However, we leave out the product data we don't need for a line time such as the created and updated time and the inventory. The line item has its own price to reflect the price at the time the order was place and not the current price of the product.
+In the OrderLine model, we'll embed some of the product data in our order line: the name, the description, and the product's id. However, we leave out the product data we don't need for a line item such as the created and updated time and the inventory. The line item has its own price to reflect the price at the time the order was placed and not the current price of the product.
 
 ### Creating the DAOs
 
@@ -2337,6 +2336,8 @@ Then we delete Order 1. We verify that Order 1 no longer exists and that Order 2
 
 ## Conclusion
 
-I hope this has been a helpful look at using Jdbi to manage data in a Spring Boot application. Jdbi provides a useful middle step between using straight JDBC or JdbcTemplate and a full-fledged ORM like Hibernate. All of the source code and a markdown formatted version of the article are available at https://github.com/erikssource/jdbidemo
+I hope this has been a helpful look at using Jdbi to manage data in a Spring Boot application. Jdbi provides a useful middle step between using straight JDBC or JdbcTemplate and a full-fledged ORM like Hibernate. All of the source code and a markdown formatted version of the article are available at
 
-There's also many more features in Jdbi than this demo looks at, so visit https://jdbi.org to look through the documentation. Happy coding!
+TODO
+
+There's also many more features in Jdbi than this demo looks at, so visit jdbi.org to look through the documentation. Happy coding!
