@@ -23,7 +23,7 @@ database, but that requires a lot of code to manage connections, create statemen
 data, and map that data into objects. JDBCTemplate can cut out a lot of boilerplate but it still
 means a lot of work.
 
-Awhile ago, I worked on a project with a data access tool that struck a balance that kept the
+A while ago, I worked on a project with a data access tool that struck a balance that kept the
 developers in charge of how the Spring application interacted with the project's relational
 databases, but still took care of a lot of the details. That tool was JDBI.
 
