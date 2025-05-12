@@ -47,6 +47,8 @@ system with products, customers, and orders. I've tried to make a demo that isn'
 doesn't cover much, but at the same time not letting the demo get very big. So be prepared to look
 at a fair amount of code, but don't expect anything like a real application.
 
+The source code for this demo and the markdown formatted version of this article can be found at: https://github.com/erikssource/jdbidemo
+
 ### Database Schema
 
 ![Database Diagram](./jdbidemo.png)
@@ -61,7 +63,7 @@ Our application will be created with Spring Boot and we'll use Postgres for our 
 our project we'll use Maven and we'll use Java 21 to code it. All pretty standard fare.
 
 The application will perform some basic CRUD functionality for categories, products, customers, and
-orders along with managing order line items. It will then provide a REST api for invoking those
+orders along with managing order line items. It will then provide a REST API for invoking those
 operations and we'll create unit tests for our Jdbi code.
 
 We'll include Spring Boot Web Starter, Spring Boot JPA Starter, Spring Boot Validation Starter,
@@ -1281,7 +1283,7 @@ UUID addOrderLine(@BindMethods OrderLineDto orderLineDto);
 
 This annotation uses the methods of the object passed in to map to the parameters in the SQL
 statement. This means we don't have to use a bean to pass in values from an object. In this case, we
-are using a java record to pass in our values.
+are using a Java record to pass in our values.
 
 ```java
 package com.elemlime.jdbidemo.model.dto;
@@ -1322,7 +1324,7 @@ more values.
 ### Configuring Jdbi
 
 We have the DAOs written so now we need to hook them into Spring. To do this we need to write a Spring
-configuration file which we'll do with annotated java code.
+configuration file which we'll do with annotated Java code.
 
 In our config package, we'll create a JdbiConfiguration.java file.
 
