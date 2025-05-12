@@ -53,7 +53,7 @@ at a fair amount of code, but don't expect anything like a real application.
 
 This is the database schema we'll be using in the demo. We have products that each have a category,
 customers, orders that each belong to a customer, and finally order line items that belong to an
-order and point to a particular product. Each of these entities has few simple attributes.
+order and point to a particular product. Each of these entities has a few simple attributes.
 
 ### The Application Project
 
