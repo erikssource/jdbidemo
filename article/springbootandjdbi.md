@@ -388,24 +388,19 @@ Our second migration is in "V2__delete_order_by_id.sql" which, as the name sugge
 for deleting an order by its id.
 
 ```sql
-create
-or replace procedure delete_order_by_id(
+create or replace procedure delete_order_by_id(
     orderid uuid
 )
 language plpgsql
 as $$
 begin
     -- Remove order lines
-delete
-from order_line
-where order_id = orderid;
+    delete from order_line where order_id=orderid;
 
--- Remove from order table
-delete
-from orders
-where id = orderid;
+    -- Remove from order table
+    delete from orders where id=orderid;
 
-commit;
+    commit;
 end;$$;
 ```
 
@@ -416,24 +411,19 @@ The third and final migration is "V3__delete_orders_by_customer.sql" which will 
 belonging to a specific customer.
 
 ```sql
-create
-or replace procedure delete_orders_by_customer(
+create or replace procedure delete_orders_by_customer(
     customerid uuid
 )
 language plpgsql
 as $$
 begin
     -- Remove order lines
-delete
-from order_line
-where order_id in (SELECT id from orders WHERE customer_id = customerid);
+    delete from order_line where order_id in (SELECT id from orders WHERE customer_id=customerid);
 
--- Remove orders from order table
-delete
-from orders
-where customer_id = customerid;
+    -- Remove orders from order table
+    delete from orders where customer_id=customerid;
 
-commit;
+    commit;
 end;$$;
 ```
 
@@ -445,7 +435,7 @@ Okay, the database is set up and we have our migrations. Now let's get the appli
 ### Setting up the Application
 
 We'll need some configuration for the application and to create the application main class. For
-configuration, we'll add three more properties to the flyway and postgres properties we already
+configuration, we'll add three more properties to the Flyway and Postgres properties we already
 have.
 
 ```properties
@@ -475,7 +465,6 @@ public class JdbidemoApplication {
   }
 
 }
-
 ```
 
 ### Creating some Models
@@ -608,7 +597,7 @@ In this model we can see a few things. We can use an enumeration for order statu
 care of turning the varchar in the table to an enumeration value. The model also has an embedded
 Customer property that is the customer that the order is associated with. Finally, it also has a
 list of order lines that are associated with this order. We'll see how these references are resolved
-when we look at the order dao.
+when we look at the order DAO.
 
 Finally, let's look at the model for a line item on an order.
 
@@ -671,27 +660,27 @@ public interface CategoryDao {
 
   @SqlQuery(
       """
-          SELECT id, name, created, updated FROM category ORDER BY name
-          """)
+      SELECT id, name, created, updated FROM category ORDER BY name
+      """)
   List<Category> getAll();
 
   @SqlQuery(
       """
-          SELECT * FROM category WHERE name = :categoryName
-          """)
+      SELECT * FROM category WHERE name = :categoryName
+      """)
   Optional<Category> getCategoryByName(@Bind("categoryName") String categoryName);
 
   @SqlQuery(
       """
-          SELECT * FROM category WHERE id = :categoryId
-          """)
+      SELECT * FROM category WHERE id = :categoryId
+      """)
   Optional<Category> getCategoryById(@Bind UUID categoryId);
 
   @SqlUpdate(
       """
-          INSERT INTO  category (name, created, updated) VALUES (:categoryName, :now, :now)
-          RETURNING *
-          """)
+      INSERT INTO  category (name, created, updated) VALUES (:categoryName, :now, :now)
+      RETURNING *
+      """)
   @GetGeneratedKeys
   @Timestamped
   Category createCategory(@Bind("categoryName") String categoryName);
@@ -702,7 +691,7 @@ When we define a Jdbi DAO, we create an interface with the method signatures we 
 take care of the implementation. How the DAO generates the implementation is determined by
 annotations. Let's look at how this works in detail.
 
-**Mapping results to a model.**
+**Mapping Results to a Model**
 
 ```java
 @RegisterBeanMapper(Category.class)
@@ -725,11 +714,10 @@ and intuitive ways to do it.
 **Getting all Categories**
 
 ```java
-
 @SqlQuery(
     """
-        SELECT id, name, created, updated FROM category ORDER BY name
-        """)
+    SELECT id, name, created, updated FROM category ORDER BY name
+    """)
 List<Category> getAll();
 ```
 
@@ -749,11 +737,10 @@ continue to look at the demo, we'll see more complex scenarios.
 **Getting a Category by Id**
 
 ```java
-
 @SqlQuery(
     """
-        SELECT * FROM category WHERE id = :categoryId
-        """)
+    SELECT * FROM category WHERE id = :categoryId
+    """)
 Optional<Category> getCategoryById(@Bind UUID categoryId);
 ```
 
@@ -779,11 +766,10 @@ great care. We won't be using that feature in this demo.
 **Getting a Category by Name**
 
 ```java
-
 @SqlQuery(
     """
-        SELECT * FROM category WHERE name = :categoryName
-        """)
+    SELECT * FROM category WHERE name = :categoryName
+    """)
 Optional<Category> getCategoryByName(@Bind("categoryName") String categoryName);
 ```
 
@@ -792,12 +778,11 @@ This method signature will get the category row by name.
 **Creating a Category**
 
 ```java
-
 @SqlUpdate(
     """
-        INSERT INTO  category (name, created, updated) VALUES (:categoryName, :now, :now)
-        RETURNING *
-        """)
+    INSERT INTO  category (name, created, updated) VALUES (:categoryName, :now, :now)
+    RETURNING *
+    """)
 @GetGeneratedKeys
 @Timestamped
 Category createCategory(@Bind("categoryName") String categoryName);
@@ -812,7 +797,7 @@ The @Timestamped annotation provides the current time as another parameter named
 insert into our SQL statement. This lets us just pass in the category name to the method and still
 be able to insert the current time for the created and updated columns.
 
-#### CustomerDao
+#### Customer DAO
 
 Let's look at the code for our customer DAO. There's not anything especially new with this one; it
 just has more columns to deal with and adds methods for updating and deleting a customer.
@@ -836,43 +821,42 @@ public interface CustomerDao {
 
   @SqlQuery(
       """
-           SELECT id, first_name, last_name, email, created, updated
-           FROM customer
-           ORDER BY last_name, first_name
-          """)
+      SELECT id, first_name, last_name, email, created, updated
+      FROM customer
+      ORDER BY last_name, first_name
+      """)
   List<Customer> getAll();
 
   @SqlQuery(
       """
-          SELECT id, first_name, last_name, email, created, updated FROM customer WHERE id = :id
-          """)
+      SELECT id, first_name, last_name, email, created, updated FROM customer WHERE id = :id
+      """)
   Optional<Customer> getCustomerById(@Bind UUID id);
 
   @SqlUpdate(
       """
-          UPDATE customer SET first_name = :firstName, last_name = :lastName, email = :email, updated = :now
-          WHERE id = :id
-          RETURNING *
-          """)
+      UPDATE customer SET first_name = :firstName, last_name = :lastName, email = :email, updated = :now
+      WHERE id = :id
+      RETURNING *
+      """)
   @GetGeneratedKeys
   @Timestamped
   Customer updateCustomer(@Bind UUID id, @Bind String email, @Bind String firstName, @Bind String lastName);
 
   @SqlUpdate(
       """
-          INSERT INTO customer (first_name, last_name, email, created, updated)
-          VALUES  (:firstName, :lastName, :email, :now, :now)
-          RETURNING *
-          """)
+      INSERT INTO customer (first_name, last_name, email, created, updated)
+      VALUES  (:firstName, :lastName, :email, :now, :now)
+      RETURNING *
+      """)
   @GetGeneratedKeys
   @Timestamped
   Customer createCustomer(@Bind String email, @Bind String firstName, @Bind String lastName);
 
   @SqlUpdate(
       """
-          DELETE FROM customer WHERE id = :id
-          """
-  )
+      DELETE FROM customer WHERE id = :id
+      """)
   void deleteCustomer(@Bind UUID id);
 }
 ```
@@ -905,9 +889,9 @@ public interface ProductDao {
 
   String SELECT_FROM_PRODUCT_TABLE =
       """
-            SELECT p.id, p.name, p.description, c.name AS category, p.price, p.inventory, p.created, p.updated
-            FROM product p INNER JOIN category c ON p.category_id = c.id
-          """;
+      SELECT p.id, p.name, p.description, c.name AS category, p.price, p.inventory, p.created, p.updated
+      FROM product p INNER JOIN category c ON p.category_id = c.id
+      """;
 
   @SqlQuery(SELECT_FROM_PRODUCT_TABLE + " ORDER BY c.name, p.name")
   List<Product> getAll();
@@ -952,9 +936,9 @@ Let's look at the select statement fragment we use in all the select statements 
 ```java
 String SELECT_FROM_PRODUCT_TABLE =
     """
-          SELECT p.id, p.name, p.description, c.name AS category, p.price, p.inventory, p.created, p.updated
-          FROM product p INNER JOIN category c ON p.category_id = c.id
-        """;
+    SELECT p.id, p.name, p.description, c.name AS category, p.price, p.inventory, p.created, p.updated
+    FROM product p INNER JOIN category c ON p.category_id = c.id
+    """;
 ```
 
 This statement uses a join. Our product bean has the category name which isn't part of the product
@@ -964,7 +948,6 @@ so it matches the bean property.
 Now let's look at the createProduct method signature to see a couple of new things.
 
 ```java
-
 @SqlUpdate("""
     INSERT INTO product (name, description, category_id, price, inventory, created, updated)
     VALUES (:name, :description, :categoryId, :price, :inventory, :now, :now)
@@ -1011,7 +994,6 @@ all in the method signature.
 Finally, let's look at the last couple of update statements in our DAO.
 
 ```java
-
 @SqlUpdate("""
     UPDATE product SET price = :price, updated = :now WHERE id = :productId
     """)
@@ -1027,9 +1009,9 @@ void updateInventory(@Bind UUID productId, @Bind int inventory);
 
 Jdbi makes it easy to do very specific actions like updating a single column in a table like we are
 doing with these two updates. This can be useful in preventing unintentional updates which can
-happen when doing a save on a hibernate entity.
+happen when doing a save on a Hibernate entity.
 
-#### Order Dao
+#### Order DAO
 
 This is the DAO where things get interesting. Let's take a look.
 
@@ -1064,13 +1046,13 @@ public interface OrderDao {
 
   String ORDER_SELECT =
       """
-            SELECT o.id o_id, o.status o_status, o.created o_created, o.updated o_updated, l.id l_id,
-            l.product_id l_product_id, p.name l_name, p.description l_description, l.quantity l_quantity,
-            l.price l_price, l.created l_created, l.updated l_updated, c.id c_id, c.first_name c_firstName,
-            c.last_name c_lastName, c.email c_email, c.created c_created, c.updated c_updated
-            FROM orders o INNER JOIN customer c ON o.customer_id=c.id
-            LEFT OUTER JOIN order_line l ON o.id = l.order_id LEFT OUTER JOIN product p ON l.product_id = p.id
-          """;
+      SELECT o.id o_id, o.status o_status, o.created o_created, o.updated o_updated, l.id l_id,
+        l.product_id l_product_id, p.name l_name, p.description l_description, l.quantity l_quantity,
+        l.price l_price, l.created l_created, l.updated l_updated, c.id c_id, c.first_name c_firstName,
+        c.last_name c_lastName, c.email c_email, c.created c_created, c.updated c_updated
+      FROM orders o INNER JOIN customer c ON o.customer_id=c.id
+        LEFT OUTER JOIN order_line l ON o.id = l.order_id LEFT OUTER JOIN product p ON l.product_id = p.id
+      """;
 
   @SqlQuery(ORDER_SELECT + "ORDER BY o.updated")
   @UseRowReducer(OrderReducer.class)
@@ -1082,10 +1064,10 @@ public interface OrderDao {
 
   @SqlQuery(
       """
-          SELECT id l_id, order_id l_order_id, product_id l_product_id, quantity l_quantity, price l_price, created l_created, updated l_updated
-          FROM order_line
-          WHERE id=:orderLineId
-          """)
+      SELECT id l_id, order_id l_order_id, product_id l_product_id, quantity l_quantity, price l_price, created l_created, updated l_updated
+      FROM order_line
+      WHERE id=:orderLineId
+      """)
   Optional<OrderLine> getOrderLineById(@Bind UUID orderLineId);
 
   @SqlUpdate(
@@ -1104,9 +1086,9 @@ public interface OrderDao {
 
   @SqlUpdate(
       """
-          INSERT INTO order_line (order_id, product_id, quantity, price, created, updated)
-          VALUES (:orderId, :productId, :quantity, :price, :now, :now)
-          """)
+      INSERT INTO order_line (order_id, product_id, quantity, price, created, updated)
+      VALUES (:orderId, :productId, :quantity, :price, :now, :now)
+      """)
   @Timestamped
   @GetGeneratedKeys("id")
   UUID addOrderLine(@BindMethods OrderLineDto orderLineDto);
@@ -1148,7 +1130,6 @@ we're going to be pulling data from queries with multiple joins.
 To accomplish this, we define multiple bean mappers for this DAO.
 
 ```java
-
 @RegisterBeanMapper(value = Order.class, prefix = "o")
 @RegisterBeanMapper(value = Customer.class, prefix = "c")
 @RegisterBeanMapper(value = OrderLine.class, prefix = "l")
@@ -1166,13 +1147,13 @@ share.
 ```java
 String ORDER_SELECT =
     """
-          SELECT o.id o_id, o.status o_status, o.created o_created, o.updated o_updated, l.id l_id,
-          l.product_id l_product_id, p.name l_name, p.description l_description, l.quantity l_quantity,
-          l.price l_price, l.created l_created, l.updated l_updated, c.id c_id, c.first_name c_firstName,
-          c.last_name c_lastName, c.email c_email, c.created c_created, c.updated c_updated
-          FROM orders o INNER JOIN customer c ON o.customer_id=c.id
-          LEFT OUTER JOIN order_line l ON o.id = l.order_id LEFT OUTER JOIN product p ON l.product_id = p.id
-        """;
+    SELECT o.id o_id, o.status o_status, o.created o_created, o.updated o_updated, l.id l_id,
+      l.product_id l_product_id, p.name l_name, p.description l_description, l.quantity l_quantity,
+      l.price l_price, l.created l_created, l.updated l_updated, c.id c_id, c.first_name c_firstName,
+      c.last_name c_lastName, c.email c_email, c.created c_created, c.updated c_updated
+    FROM orders o INNER JOIN customer c ON o.customer_id=c.id
+      LEFT OUTER JOIN order_line l ON o.id = l.order_id LEFT OUTER JOIN product p ON l.product_id = p.id
+    """;
 ```
 
 We prefix the columns in our result set to match the mappers we've defined, pulling the values from
@@ -1189,7 +1170,6 @@ there are a couple of important new annotations used here: @UseRowReducer, @Bind
 Let's look at the method signature for getting all the orders.
 
 ```java
-
 @SqlQuery(ORDER_SELECT + "ORDER BY o.updated")
 @UseRowReducer(OrderReducer.class)
 List<Order> getAll();
