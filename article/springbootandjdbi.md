@@ -1250,12 +1250,11 @@ If we look at the method signature for creating an order line item, we'll see an
 The method parameter has the @BindMethods annotation.
 
 ```java
-
 @SqlUpdate(
     """
-        INSERT INTO order_line (order_id, product_id, quantity, price, created, updated)
-        VALUES (:orderId, :productId, :quantity, :price, :now, :now)
-        """)
+    INSERT INTO order_line (order_id, product_id, quantity, price, created, updated)
+    VALUES (:orderId, :productId, :quantity, :price, :now, :now)
+    """)
 @Timestamped
 @GetGeneratedKeys("id")
 UUID addOrderLine(@BindMethods OrderLineDto orderLineDto);
@@ -1270,13 +1269,11 @@ package com.elemlime.jdbidemo.model.dto;
 
 import java.util.UUID;
 
-public record OrderLineDto(UUID orderId, UUID productId, int quantity, int price) {
-
-}
+public record OrderLineDto(UUID orderId, UUID productId, int quantity, int price) {}
 ```
 
 A record will have getters with the same name as the fields in the class: orderId, productId,
-quantity, and price. We could also have a regular POJO (Plain OLd Java Object) with the same method
+quantity, and price. We could also have a regular POJO with the same method
 names and bind to methods as well.
 
 **Calling Procedures**
@@ -1288,7 +1285,6 @@ them with Jdbi using the same logic we do with @SqlQuery and @SqlUpdate annotate
 Let's take a look.
 
 ```java
-
 @SqlCall("call delete_order_by_id(:orderId)")
 void deleteOrder(@Bind UUID orderId);
 
@@ -1376,7 +1372,6 @@ Let's take a look at how the configuration wires things together, starting with 
 the class.
 
 ```java
-
 @Configuration
 @EnableTransactionManagement
 public class JdbiConfiguration {
@@ -1390,7 +1385,6 @@ transaction.
 We now need to define a Jdbi bean which will wire Jdbi into the Spring application.
 
 ```java
-
 @Bean
 public Jdbi jdbi(DataSource ds, List<JdbiPlugin> plugins, List<RowMapper<?>> mappers) {
   TransactionAwareDataSourceProxy proxy = new TransactionAwareDataSourceProxy(ds);
@@ -1417,7 +1411,6 @@ In order to inject the DAOs we've defined, we need to create beans that will cre
 implementations for the DAO interfaces we've created.
 
 ```java
-
 @Bean
 public CategoryDao categoryDao(Jdbi jdbi) {
   return jdbi.onDemand(CategoryDao.class);
@@ -1612,7 +1605,6 @@ interface. We'll then use constructor injection to get the needed DAOs and set t
 members of this class.
 
 ```java
-
 @Service
 public class OrderServiceImpl implements OrderService {
 
@@ -1632,7 +1624,6 @@ public class OrderServiceImpl implements OrderService {
 If we look at the implementation of the method for listing all orders, we find it's very simple.
 
 ```java
-
 @Override
 public List<Order> listAll() {
   return orderDao.getAll();
@@ -1650,7 +1641,6 @@ Here, the DAO returns an Optional when we call `orderDao.getById(orderId)` so we
 Optional doesn't have a value.
 
 ```java
-
 @Override
 public Order findById(UUID orderId) {
   return orderDao
@@ -1667,7 +1657,6 @@ simply call the `orderDao.createOrder` method of the DAO. The method then return
 newly created order.
 
 ```java
-
 @Override
 public UUID create(UUID customerId) {
   var customer =
@@ -1686,7 +1675,6 @@ public UUID create(UUID customerId) {
 Updating the order status is just a passthrough to the DAO.
 
 ```java
-
 @Override
 public void updateStatus(UUID orderId, OrderStatus status) {
   orderDao.updateOrderStatus(orderId, status);
@@ -1701,7 +1689,6 @@ subtract the quantity of that line item from our inventory for the product invol
 update the updated timestamp on the orders row.
 
 ```java
-
 @Override
 @Transactional
 public UUID addOrderLine(UUID orderId, UUID productId, int quantity) {
@@ -1751,7 +1738,6 @@ inventory. Once again we are updating three tables, and we only want to perform 
 updates succeed so once again we use the @Transactional annotation.
 
 ```java
-
 @Override
 @Transactional
 public void deleteOrderLine(UUID orderLineId) {
@@ -1779,11 +1765,10 @@ public void deleteOrderLine(UUID orderLineId) {
 
 **Deleting Orders**
 
-The last two methods are for deleting orders. These are simple passthroughs to the DAO which in turn
+The last two methods are for deleting orders. These are simple pass-throughs to the DAO which in turn
 makes procedure calls to the database.
 
 ```java
-
 @Override
 public void delete(UUID orderId) {
   orderDao.deleteOrder(orderId);
@@ -1863,7 +1848,6 @@ consistency and also includes a catch-all for general exceptions, but we'll focu
 JdbiException handler.
 
 ```java
-
 @ExceptionHandler(JdbiException.class)
 public ResponseEntity<ErrorResponse> handleJdbiException(JdbiException ex, WebRequest request) {
   if (ex.getMessage().toLowerCase().contains("duplicate key")) {
@@ -1881,7 +1865,7 @@ exception is a violation of a unique index and mapping that to a HTTP conflict e
 is that you'll want to handle Jdbi exceptions somewhere in your application when using Jdbi to
 access data.
 
-## Time for some Testing
+## Time for Some Testing
 
 The unit testing for the demo only covers the DAOs because that's where the Jdbi is.
 
@@ -2121,7 +2105,7 @@ orderHelperDao.insertOrderLines(
         new OrderLineTestDto(ORDER_1_LINE_2_ID, ORDER_1_ID, SMALL_BOX_PRODUCT_ID, 2,299)));
 ```
 
-Lastly, we have an extra query to help verify the database state when testing.
+Lastly, we have an extra query, `getAllOrderLinesIds`, to help verify the database state when testing.
 
 #### Configuring our Helper DAOs
 
@@ -2605,7 +2589,6 @@ public class OrderDaoTest extends AbstractDaoTest {
 All the dao tests will follow the same pattern for setting up.
 
 ```java
-
 @Import({TestcontainersConfiguration.class, TestDaoConfig.class})
 @SpringBootTest
 public class OrderDaoTest extends AbstractDaoTest {
@@ -2644,7 +2627,6 @@ looking at a few should be sufficient to understand what is going on.
 **Test Getting an Order by Id**
 
 ```java
-
 @Test
 void testGetById_Order1() {
   testData.loadOrders();
@@ -2661,7 +2643,6 @@ then make sure it is present and validate that all the values are as expected.
 **Test Adding an Order Line Item**
 
 ```java
-
 @Test
 void testAddOrderLine() {
   testData.loadOrders();
@@ -2696,7 +2677,6 @@ Then we verify the values of that line item to make sure it is as expected.
 Finally, let's look at the test for deleting a line item from an order.
 
 ```java
-
 @Test
 void testDeleteOrder() {
   testData.loadOrders();
